@@ -37,7 +37,7 @@ a {
 .topbar-inner {
     max-width: 1180px;
     margin: 0 auto;
-    padding: 18px 20px;
+    padding: 18px 20px 0;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -101,6 +101,45 @@ a {
     color: #B9B9B6;
     text-transform: uppercase;
     letter-spacing: 0.4px;
+}
+
+.tabbar {
+    max-width: 1180px;
+    margin: 14px auto 0;
+    padding: 0 20px;
+    display: flex;
+    gap: 4px;
+    overflow-x: auto;
+}
+
+.tab-btn {
+    background: transparent;
+    border: none;
+    color: #C7C7C5;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-weight: 600;
+    font-size: 13.5px;
+    padding: 10px 16px;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    white-space: nowrap;
+}
+
+.tab-btn:hover {
+    color: #fff;
+}
+
+.tab-btn.active {
+    color: #fff;
+    border-bottom-color: var(--senai-red);
+}
+
+.tab-panel {
+    display: none;
+}
+
+.tab-panel.active {
+    display: block;
 }
 
 .wrap {
@@ -468,4 +507,245 @@ footer.foot {
     padding: 20px;
     color: var(--muted);
     font-size: 12px;
+}
+
+/* ---- Scanner tab ---- */
+.scan-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 20px;
+    max-width: 480px;
+    margin: 0 auto 20px;
+}
+
+.section-title {
+    font-family: 'Archivo', sans-serif;
+    font-size: 17px;
+    margin: 0 0 4px;
+}
+
+.section-sub {
+    color: var(--muted);
+    font-size: 13px;
+    margin: 0 0 14px;
+}
+
+#qr-reader {
+    width: 100%;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #111;
+    min-height: 40px;
+}
+
+.scan-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 12px;
+}
+
+.scan-result {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 20px;
+    max-width: 480px;
+    margin: 0 auto;
+}
+
+.scan-result-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 14px;
+    margin-bottom: 14px;
+}
+
+.scan-result-head h3 {
+    font-family: 'Archivo', sans-serif;
+    font-size: 16px;
+    margin: 2px 0 4px;
+}
+
+.sr-balance {
+    text-align: right;
+}
+
+.sr-balance .l {
+    font-size: 11px;
+    color: var(--muted);
+    text-transform: uppercase;
+}
+
+.sr-balance .n {
+    font-family: 'IBM Plex Mono', monospace;
+    font-weight: 700;
+    font-size: 22px;
+}
+
+.sr-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.sr-tab-btn {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid var(--line);
+    background: var(--bg);
+    border-radius: 7px;
+    font-weight: 600;
+    font-size: 13.5px;
+    cursor: pointer;
+    color: var(--muted);
+}
+
+.sr-tab-btn.active {
+    background: var(--ink);
+    color: #fff;
+    border-color: var(--ink);
+}
+
+/* ---- Admin tab ---- */
+.admin-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+@media (max-width: 720px) {
+    .admin-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.admin-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 18px;
+}
+
+.admin-list {
+    margin-top: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 360px;
+    overflow-y: auto;
+}
+
+.admin-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 10px;
+    border: 1px solid var(--line);
+    border-radius: 7px;
+    font-size: 13.5px;
+}
+
+.admin-row .code {
+    font-family: 'IBM Plex Mono', monospace;
+    color: var(--senai-red-dark);
+    font-weight: 600;
+    margin-right: 8px;
+}
+
+/* ---- History table ---- */
+.hist-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    overflow: hidden;
+    font-size: 13px;
+}
+
+.hist-table th {
+    text-align: left;
+    background: var(--bg);
+    padding: 10px 12px;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    color: var(--muted);
+    border-bottom: 1px solid var(--line);
+}
+
+.hist-table td {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--line);
+}
+
+.hist-table tr:last-child td {
+    border-bottom: none;
+}
+
+.pill {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 9px;
+    border-radius: 20px;
+}
+
+.pill-in {
+    background: #E5F2E8;
+    color: #286B44;
+}
+
+.pill-out {
+    background: var(--danger-bg);
+    color: var(--danger);
+}
+
+/* ---- QR label / print ---- */
+.qr-print-area {
+    text-align: center;
+    padding: 20px;
+    border: 1px dashed var(--line);
+    border-radius: 8px;
+}
+
+.qr-canvas-holder {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 10px;
+}
+
+.qr-sku {
+    font-family: 'IBM Plex Mono', monospace;
+    font-weight: 700;
+    font-size: 16px;
+    letter-spacing: 0.5px;
+}
+
+.qr-name {
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 2px;
+}
+
+@media print {
+    body * {
+        visibility: hidden;
+    }
+
+    #qrPrintArea, #qrPrintArea * {
+        visibility: visible;
+    }
+
+    #qrPrintArea {
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        border: none;
+    }
 }

@@ -4,8 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Almoxarifado SENAI</title>
+    <title>Almoxarifado SENAI — Arquivo Morto</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#E30613">
     <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
 <body>
@@ -15,60 +18,191 @@
                 <div class="brand-mark">SENAI</div>
                 <div>
                     <h1>Almoxarifado</h1>
-                    <p>Controle de itens, materiais e apostilas</p>
+                    <p>Arquivo Morto — controle por QR Code</p>
                 </div>
             </div>
             <div class="stats" id="stats"></div>
         </div>
+        <nav class="tabbar">
+            <button class="tab-btn active" data-tab="estoque">📦 Estoque</button>
+            <button class="tab-btn" data-tab="scanner">📷 Scanner QR</button>
+            <button class="tab-btn" data-tab="historico">🕓 Histórico</button>
+            <button class="tab-btn" data-tab="admin">⚙️ Famílias / Tipos</button>
+        </nav>
     </header>
 
     <main class="wrap">
-        <div class="toolbar">
-            <div class="search">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <circle cx="11" cy="11" r="8" />
-                    <path d="m21 21-4.3-4.3" />
-                </svg>
-                <input type="text" id="searchInput" placeholder="Buscar por nome, código, categoria ou local...">
-            </div>
-            <select class="catfilter" id="catFilter">
-                <option value="">Todas as categorias</option>
-            </select>
-            <button class="btn-new" id="btnNew">+ Novo item</button>
-        </div>
 
-        <div id="content" class="loading">Carregando itens do almoxarifado...</div>
+        <!-- ESTOQUE -->
+        <section id="tab-estoque" class="tab-panel active">
+            <div class="toolbar">
+                <div class="search">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8" />
+                        <path d="m21 21-4.3-4.3" />
+                    </svg>
+                    <input type="text" id="searchInput" placeholder="Buscar por SKU, nome, família ou tipo...">
+                </div>
+                <select class="catfilter" id="famFilter">
+                    <option value="">Todas as famílias</option>
+                </select>
+                <select class="catfilter" id="lowFilter">
+                    <option value="">Todos os itens</option>
+                    <option value="low">Somente estoque baixo</option>
+                </select>
+                <button class="btn-new" id="btnNew">+ Novo produto</button>
+            </div>
+            <div id="content" class="loading">Carregando itens do almoxarifado...</div>
+        </section>
+
+        <!-- SCANNER -->
+        <section id="tab-scanner" class="tab-panel">
+            <div class="scan-card">
+                <h2 class="section-title">Escanear QR Code</h2>
+                <p class="section-sub">Aponte a câmera para a etiqueta do item para registrar entrada ou saída.</p>
+                <div id="qr-reader"></div>
+                <div class="scan-actions">
+                    <button class="btn-secondary" id="btnStartScan">Iniciar câmera</button>
+                    <button class="btn-secondary" id="btnStopScan" style="display:none">Parar câmera</button>
+                </div>
+                <div class="field" style="margin-top:14px">
+                    <label>Ou digite o código SKU manualmente (FFF.TTT.PPPP)</label>
+                    <div style="display:flex;gap:8px">
+                        <input type="text" id="manualSku" placeholder="Ex: 001.001.0042">
+                        <button class="btn-primary" id="btnManualLookup">Buscar</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="scan-result" id="scanResult" style="display:none">
+                <div class="scan-result-head">
+                    <div>
+                        <div class="card-code" id="srSku"></div>
+                        <h3 id="srName"></h3>
+                        <div class="card-loc" id="srLoc"></div>
+                    </div>
+                    <div class="sr-balance">
+                        <div class="l">Saldo atual</div>
+                        <div class="n" id="srQty">0</div>
+                    </div>
+                </div>
+
+                <div class="sr-tabs">
+                    <button class="sr-tab-btn active" data-kind="entrada">📥 Entrada</button>
+                    <button class="sr-tab-btn" data-kind="saida">📤 Saída</button>
+                </div>
+
+                <div class="error-msg" id="scanErrorMsg"></div>
+
+                <div class="field">
+                    <label id="qtyLabel">Quantidade adicionada</label>
+                    <input type="number" id="movQty" min="1" value="1">
+                </div>
+                <div class="field" id="reasonField" style="display:none">
+                    <label>Motivo da retirada</label>
+                    <input type="text" id="movReason" placeholder="Ex: Uso em sala, Descarte, Empréstimo...">
+                </div>
+                <div class="field">
+                    <label>Responsável</label>
+                    <input type="text" id="movResp" placeholder="Nome de quem está movimentando">
+                </div>
+                <div class="modal-actions">
+                    <button class="btn-secondary" id="btnCancelScan">Cancelar</button>
+                    <button class="btn-primary" id="btnConfirmMov">Confirmar</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- HISTORICO -->
+        <section id="tab-historico" class="tab-panel">
+            <div class="toolbar">
+                <div class="search">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8" />
+                        <path d="m21 21-4.3-4.3" />
+                    </svg>
+                    <input type="text" id="histSearch" placeholder="Buscar por SKU, nome ou responsável...">
+                </div>
+                <select class="catfilter" id="histKindFilter">
+                    <option value="">Todas as movimentações</option>
+                    <option value="entrada">Entradas</option>
+                    <option value="saida">Saídas</option>
+                </select>
+            </div>
+            <div id="histContent" class="loading">Carregando histórico...</div>
+        </section>
+
+        <!-- ADMIN -->
+        <section id="tab-admin" class="tab-panel">
+            <div class="admin-grid">
+                <div class="admin-card">
+                    <h2 class="section-title">Famílias</h2>
+                    <div class="field">
+                        <label>Nome da família</label>
+                        <div style="display:flex;gap:8px">
+                            <input type="text" id="newFamName" placeholder="Ex: Documentos">
+                            <button class="btn-primary" id="btnAddFam">Adicionar</button>
+                        </div>
+                    </div>
+                    <div id="famList" class="admin-list"></div>
+                </div>
+                <div class="admin-card">
+                    <h2 class="section-title">Tipos</h2>
+                    <div class="field">
+                        <label>Família</label>
+                        <select id="typeFamSelect"></select>
+                    </div>
+                    <div class="field">
+                        <label>Nome do tipo</label>
+                        <div style="display:flex;gap:8px">
+                            <input type="text" id="newTypeName" placeholder="Ex: Caixas de Arquivo">
+                            <button class="btn-primary" id="btnAddType">Adicionar</button>
+                        </div>
+                    </div>
+                    <div id="typeList" class="admin-list"></div>
+                </div>
+            </div>
+        </section>
+
     </main>
 
+    <!-- MODAL: novo/editar produto -->
     <div class="modal-overlay" id="modalOverlay">
         <div class="modal">
-            <h2 id="modalTitle">Novo item</h2>
+            <h2 id="modalTitle">Novo produto</h2>
             <div class="error-msg" id="errorMsg"></div>
             <input type="hidden" id="itemId">
+            <div class="row2">
+                <div class="field">
+                    <label>Família</label>
+                    <select id="fFamily"></select>
+                </div>
+                <div class="field">
+                    <label>Tipo</label>
+                    <select id="fType"></select>
+                </div>
+            </div>
+            <div class="field">
+                <label>Código gerado (SKU)</label>
+                <input type="text" id="fSkuPreview" disabled placeholder="Será gerado automaticamente">
+            </div>
             <div class="field">
                 <label>Nome do item</label>
                 <input type="text" id="fName" placeholder="Ex: Apostila Eletrônica Básica">
             </div>
             <div class="row2">
                 <div class="field">
-                    <label>Categoria</label>
-                    <input type="text" id="fCategory" list="catList" placeholder="Ex: Apostilas, Cabos...">
-                    <datalist id="catList"></datalist>
-                </div>
-                <div class="field">
-                    <label>Quantidade</label>
+                    <label>Quantidade inicial</label>
                     <input type="number" id="fQty" min="0" value="1">
                 </div>
+                <div class="field">
+                    <label>Estoque mínimo</label>
+                    <input type="number" id="fMinQty" min="0" value="3">
+                </div>
             </div>
-            <div class="row2">
-                <div class="field">
-                    <label>Código (opcional)</label>
-                    <input type="text" id="fCode" placeholder="Ex: CB-014">
-                </div>
-                <div class="field">
-                    <label>Localização</label>
-                    <input type="text" id="fLocation" placeholder="Ex: Prateleira 3, Corredor B">
-                </div>
+            <div class="field">
+                <label>Localização</label>
+                <input type="text" id="fLocation" placeholder="Ex: Estante B, Prateleira 3">
             </div>
             <div class="field">
                 <label>Descrição / observações</label>
@@ -81,6 +215,23 @@
         </div>
     </div>
 
+    <!-- MODAL: QR code / etiqueta -->
+    <div class="modal-overlay" id="qrOverlay">
+        <div class="modal" id="qrModalBody">
+            <h2>Etiqueta do item</h2>
+            <div id="qrPrintArea" class="qr-print-area">
+                <div id="qrCanvasHolder" class="qr-canvas-holder"></div>
+                <div class="qr-sku" id="qrSkuText"></div>
+                <div class="qr-name" id="qrNameText"></div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn-secondary" id="btnCloseQr">Fechar</button>
+                <button class="btn-primary" id="btnPrintQr">Imprimir etiqueta</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
     <script type="module" src="app.js"></script>
 </body>
 
