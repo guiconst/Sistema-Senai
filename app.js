@@ -343,24 +343,57 @@ async function startScanner() {
     const el = document.getElementById('qr-reader');
     el.style.minHeight = '260px';
     if (!window.Html5Qrcode) { alert('Biblioteca de leitura de QR Code não carregou. Verifique sua conexão.'); return; }
+
+    if (!window.isSecureContext) {
+        alert('A câmera só funciona em conexão segura (HTTPS) ou em "localhost". Abra o site pelo link https://... ou use a busca manual pelo SKU abaixo.');
+        return;
+    }
+
     html5QrCode = new Html5Qrcode('qr-reader');
+    const scanConfig = { fps: 10, qrbox: { width: 240, height: 240 } };
+
+    // 1ª tentativa: pedir a câmera traseira diretamente
     try {
         await html5QrCode.start(
             { facingMode: 'environment' },
-            { fps: 10, qrbox: { width: 240, height: 240 } },
-            decodedText => { handleScanResult(decodedText.trim()); },
-            () => { }
+            scanConfig,
+            decodedText => handleScanResult(decodedText.trim()),
+            () => {}
         );
-        document.getElementById('btnStartScan').style.display = 'none';
-        document.getElementById('btnStopScan').style.display = 'inline-block';
+        onScannerStarted();
+        return;
     } catch (e) {
-        alert('Não foi possível acessar a câmera: ' + e);
+        console.warn('facingMode environment falhou, tentando listar câmeras...', e);
     }
+
+    // 2ª tentativa: listar câmeras do dispositivo e usar a última (geralmente a traseira em celulares)
+    try {
+        const cams = await Html5Qrcode.getCameras();
+        if (!cams || cams.length === 0) {
+            alert('Nenhuma câmera foi encontrada neste dispositivo/navegador. Verifique se seu celular tem câmera disponível e se você permitiu o acesso a ela, ou use a busca manual pelo SKU abaixo.');
+            return;
+        }
+        const chosen = cams.length > 1 ? cams[cams.length - 1] : cams[0];
+        await html5QrCode.start(
+            chosen.id,
+            scanConfig,
+            decodedText => handleScanResult(decodedText.trim()),
+            () => {}
+        );
+        onScannerStarted();
+    } catch (e2) {
+        alert('Não foi possível acessar a câmera: ' + e2 + '\n\nDicas: use HTTPS, permita o acesso à câmera nas configurações do navegador, e teste em um celular (a maioria dos computadores não tem câmera "traseira"). Você também pode digitar o SKU manualmente abaixo.');
+    }
+}
+
+function onScannerStarted() {
+    document.getElementById('btnStartScan').style.display = 'none';
+    document.getElementById('btnStopScan').style.display = 'inline-block';
 }
 
 async function stopScanner() {
     if (html5QrCode) {
-        try { await html5QrCode.stop(); html5QrCode.clear(); } catch (e) { }
+        try { await html5QrCode.stop(); html5QrCode.clear(); } catch (e) {}
         html5QrCode = null;
     }
     document.getElementById('btnStartScan').style.display = 'inline-block';
@@ -590,7 +623,7 @@ document.getElementById('typeList').addEventListener('click', async e => {
 
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-        navigator.serviceWorker.register('sw.js').catch(() => { });
+        navigator.serviceWorker.register('sw.js').catch(() => {});
     });
 }
 
