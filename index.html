@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Almoxarifado SENAI</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <header class="topbar">
+        <div class="topbar-inner">
+            <div class="brand">
+                <div class="brand-mark">SENAI</div>
+                <div>
+                    <h1>Almoxarifado</h1>
+                    <p>Controle de itens, materiais e apostilas</p>
+                </div>
+            </div>
+            <div class="stats" id="stats"></div>
+        </div>
+    </header>
+
+    <main class="wrap">
+        <div class="toolbar">
+            <div class="search">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8" />
+                    <path d="m21 21-4.3-4.3" />
+                </svg>
+                <input type="text" id="searchInput" placeholder="Buscar por nome, código, categoria ou local...">
+            </div>
+            <select class="catfilter" id="catFilter">
+                <option value="">Todas as categorias</option>
+            </select>
+            <button class="btn-new" id="btnNew">+ Novo item</button>
+        </div>
+
+        <div id="content" class="loading">Carregando itens do almoxarifado...</div>
+    </main>
+
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal">
+            <h2 id="modalTitle">Novo item</h2>
+            <div class="error-msg" id="errorMsg"></div>
+            <input type="hidden" id="itemId">
+            <div class="field">
+                <label>Nome do item</label>
+                <input type="text" id="fName" placeholder="Ex: Apostila Eletrônica Básica">
+            </div>
+            <div class="row2">
+                <div class="field">
+                    <label>Categoria</label>
+                    <input type="text" id="fCategory" list="catList" placeholder="Ex: Apostilas, Cabos...">
+                    <datalist id="catList"></datalist>
+                </div>
+                <div class="field">
+                    <label>Quantidade</label>
+                    <input type="number" id="fQty" min="0" value="1">
+                </div>
+            </div>
+            <div class="row2">
+                <div class="field">
+                    <label>Código (opcional)</label>
+                    <input type="text" id="fCode" placeholder="Ex: CB-014">
+                </div>
+                <div class="field">
+                    <label>Localização</label>
+                    <input type="text" id="fLocation" placeholder="Ex: Prateleira 3, Corredor B">
+                </div>
+            </div>
+            <div class="field">
+                <label>Descrição / observações</label>
+                <textarea id="fDesc" placeholder="Detalhes sobre o item, estado de conservação, etc."></textarea>
+            </div>
+            <div class="modal-actions">
+                <button class="btn-secondary" id="btnCancel">Cancelar</button>
+                <button class="btn-primary" id="btnSave">Salvar item</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="app.js"></script>
+</body>
+
+</html>
